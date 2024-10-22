@@ -15,7 +15,7 @@ def connect_to_google_sheet():
 
     # Try to open the specific sheet
     try:
-        sheet = client.open('dataCollector').sheet1
+        sheet = client.open('HMMFinal').worksheet('Sheet1')  # Updated to the correct sheet name
     except gspread.SpreadsheetNotFound as e:
         st.error(f"Error: {e}")
         return None
@@ -28,8 +28,8 @@ def connect_to_google_sheet():
 
 # Function to calculate summary statistics
 def calculate_summary(df, latest_data):
-    trials = [f'd{i}' for i in range(1, 11)]  # Assuming d1 to d10 are trial times
-    errors = [f'e{i}' for i in range(1, 11)]  # Assuming e1 to e10 are error values
+    trials = [f'Trial {i} Time (Second)' for i in range(1, 11)]  # Assuming Trial 1 to Trial 10 are trial times
+    errors = [f'Trial {i} Error' for i in range(1, 11)]  # Assuming Trial 1 to Trial 10 are error values
 
     # Calculate means
     first_two_trials_mean_time = latest_data[trials[:2]].mean()
@@ -63,8 +63,8 @@ def filter_and_display_data(df):
         if uid_filter and eid_filter:
             # Filter DataFrame while stripping any whitespace and converting to string
             filtered_df = df[
-                (df['uid'].astype(str).str.strip() == str(uid_filter).strip()) &
-                (df['eid'].astype(str).str.strip() == str(eid_filter).strip())
+                (df['Subject UID'].astype(str).str.strip() == str(uid_filter).strip()) &
+                (df['Examiner UID'].astype(str).str.strip() == str(eid_filter).strip())
             ]
 
             if not filtered_df.empty:
@@ -75,16 +75,26 @@ def filter_and_display_data(df):
                 summary_df, first_two_trials_mean_time, last_two_trials_mean_time, first_two_trials_mean_error, last_two_trials_mean_error, time_saving, error_saving = calculate_summary(filtered_df, latest_data)
 
                 # Display UID, EID, and Date
-                st.write("### Your Credentials")
+                st.write("### Subject Credentials")
                 st.write(f"**Your UID:** {uid_filter}")
                 st.write(f"**Your EID:** {eid_filter}")
-                st.write(f"**Test Date (mm/dd/yyyy):** {latest_data['date']}")  # Assuming 'date' is the column name for dates in your Google Sheet
+                st.write(f"**Test Date (mm/dd/yyyy):** {latest_data['Submission D/T']}")
+                st.write(f"**Subject First Name:** {latest_data['Subject First Name']}")
+                st.write(f"**Subject Last Name:** {latest_data['Subject Last Name']}")
+                st.write(f"**Subject Email:** {latest_data['Subject Email']}")
+                st.write(f"**Subject DOB:** {latest_data['Subject DOB']}")
+                st.write(f"**Subject Gender:** {latest_data['Subject Gender']}")
+                st.write(f"**Subject Education Level:** {latest_data['Subject Edu Lavel']}")
+                st.write(f"**Subject Institute:** {latest_data['Subject Institute']}")
+                st.write(f"**Examiner First Name:** {latest_data['Examiner First Name']}")
+                st.write(f"**Examiner Last Name:** {latest_data['Examiner Last Name']}")
+                st.write(f"**Examiner Email ID:** {latest_data['Examiner Email ID']}")
 
                 # Create a DataFrame for display with specified columns
                 results_table = pd.DataFrame({
                     "Trial Number": range(1, 11),
-                    "Errors": latest_data[[f'e{i}' for i in range(1, 11)]].values.flatten(),
-                    "Time": latest_data[[f'd{i}' for i in range(1, 11)]].values.flatten()
+                    "Errors": latest_data[[f'Trial {i} Error' for i in range(1, 11)]].values.flatten(),
+                    "Time": latest_data[[f'Trial {i} Time (Second)' for i in range(1, 11)]].values.flatten()
                 })
 
                 # Center align the results table
@@ -92,8 +102,8 @@ def filter_and_display_data(df):
                 st.markdown(f"<div style='text-align: center;'>{results_table.to_html(escape=False, index=False)}</div>", unsafe_allow_html=True)
 
                 # Use the latest row for plotting
-                trials_data = latest_data[[f'd{i}' for i in range(1, 11)]].values.flatten()
-                errors_data = latest_data[[f'e{i}' for i in range(1, 11)]].values.flatten()
+                trials_data = latest_data[[f'Trial {i} Time (Second)' for i in range(1, 11)]].values.flatten()
+                errors_data = latest_data[[f'Trial {i} Error' for i in range(1, 11)]].values.flatten()
 
                 # Create three separate graphs
                 # Graph for Errors
@@ -144,7 +154,8 @@ def filter_and_display_data(df):
 
 # Main function to run the app
 def main():
-    st.title("Hey there, here is your Human maze master test result")
+    st.title("Hey there, Human Maze Master test result")
+    st.write("Please Use Sidebar to input your credentials. for any other information please visit psiq.in")
 
     # Connect to Google Sheets and load data
     df = connect_to_google_sheet()
