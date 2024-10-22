@@ -63,7 +63,7 @@ def filter_and_display_data(df):
 
 # Main function to run the app
 def main():
-    st.title("Your Result will be shown here")
+    st.title("Your HMM Result")
 
     # Connect to Google Sheets and load data
     df = connect_to_google_sheet()
