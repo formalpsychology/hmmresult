@@ -26,16 +26,40 @@ def connect_to_google_sheet():
 
     return df
 
+# Function to calculate summary statistics
+def calculate_summary(df, latest_data):
+    trials = [f'd{i}' for i in range(1, 11)]  # Assuming d1 to d10 are trial times
+    errors = [f'e{i}' for i in range(1, 11)]  # Assuming e1 to e10 are error values
+
+    # Calculate means
+    first_two_trials_mean_time = latest_data[trials[:2]].mean()
+    last_two_trials_mean_time = latest_data[trials[-2:]].mean()
+    first_two_trials_mean_error = latest_data[errors[:2]].mean()
+    last_two_trials_mean_error = latest_data[errors[-2:]].mean()
+
+    # Calculate time savings
+    time_saving = first_two_trials_mean_time - last_two_trials_mean_time
+    error_saving = first_two_trials_mean_error - last_two_trials_mean_error
+
+    # Create summary DataFrame with 3 rows and 5 columns
+    summary_df = pd.DataFrame({
+        "Trial": ["First Two Trials", "Last Two Trials", "Savings"],
+        "Mean Time": [first_two_trials_mean_time, last_two_trials_mean_time, None],
+        "Mean Error": [first_two_trials_mean_error, last_two_trials_mean_error, None],
+        "Time Saving": [None, None, time_saving],
+        "Error Saving": [None, None, error_saving]
+    })
+
+    return summary_df, first_two_trials_mean_time, last_two_trials_mean_time, first_two_trials_mean_error, last_two_trials_mean_error, time_saving, error_saving
+
 # Function to filter and display data
 def filter_and_display_data(df):
-    st.sidebar.title("Input Credentials Here")
-
     # Sidebar inputs for UID and EID
     uid_filter = st.sidebar.text_input("Your UID")
     eid_filter = st.sidebar.text_input("Your EID")
 
     # Button to apply filters
-    if st.sidebar.button("Apply Filters"):
+    if st.sidebar.button("Get Result"):
         if uid_filter and eid_filter:
             # Filter DataFrame while stripping any whitespace and converting to string
             filtered_df = df[
@@ -48,29 +72,28 @@ def filter_and_display_data(df):
 
                 # Prepare data for the table and graphs
                 latest_data = filtered_df.iloc[-1]  # Get the latest entry
-                trials = [f'd{i}' for i in range(1, 11)]  # Assuming d1 to d10 are trial times
-                errors = [f'e{i}' for i in range(1, 11)]  # Assuming e1 to e10 are error values
+                summary_df, first_two_trials_mean_time, last_two_trials_mean_time, first_two_trials_mean_error, last_two_trials_mean_error, time_saving, error_saving = calculate_summary(filtered_df, latest_data)
+
+                # Display UID, EID, and Date
+                st.write("### Your Credentials")
+                st.write(f"**Your UID:** {uid_filter}")
+                st.write(f"**Your EID:** {eid_filter}")
+                st.write(f"**Test Date (mm/dd/yyyy):** {latest_data['date']}")  # Assuming 'date' is the column name for dates in your Google Sheet
 
                 # Create a DataFrame for display with specified columns
                 results_table = pd.DataFrame({
                     "Trial Number": range(1, 11),
-                    "Errors": latest_data[errors].values.flatten(),
-                    "Time": latest_data[trials].values.flatten()
+                    "Errors": latest_data[[f'e{i}' for i in range(1, 11)]].values.flatten(),
+                    "Time": latest_data[[f'd{i}' for i in range(1, 11)]].values.flatten()
                 })
 
-                # Display UID, EID, and date from the sheet
-                st.write("### Your Credentials")
-                st.write(f"**Your UID:** {uid_filter}")
-                st.write(f"**Your EID:** {eid_filter}")
-                st.write(f"**Test Date:** {latest_data['date']}")  # Assuming the date column is named 'date'
-
-                # Center align the table
+                # Center align the results table
                 st.write("### Results Table")
                 st.markdown(f"<div style='text-align: center;'>{results_table.to_html(escape=False, index=False)}</div>", unsafe_allow_html=True)
 
                 # Use the latest row for plotting
-                trials_data = latest_data[trials].values.flatten()
-                errors_data = latest_data[errors].values.flatten()
+                trials_data = latest_data[[f'd{i}' for i in range(1, 11)]].values.flatten()
+                errors_data = latest_data[[f'e{i}' for i in range(1, 11)]].values.flatten()
 
                 # Create three separate graphs
                 # Graph for Errors
@@ -101,6 +124,19 @@ def filter_and_display_data(df):
                 ax.legend()
                 st.pyplot(fig)
 
+                # Display summary results table
+                st.write("### Summary Results Table")
+                st.markdown(f"<div style='text-align: center;'>{summary_df.to_html(escape=False, index=False)}</div>", unsafe_allow_html=True)
+
+                # Add the analysis statement
+                analysis_statement = (f"The average time for the first two attempts was {first_two_trials_mean_time:.2f}, while for the last two attempts, it reduced significantly to only {last_two_trials_mean_time:.2f}. "
+                                       f"This practice-induced improvement resulted in a time saving of {time_saving:.2f}. This suggests that the quantity of the participant's learning increased due to practice. "
+                                       f"Regarding inaccuracies, there were an average of {first_two_trials_mean_error:.2f} inaccuracies in the first two attempts, while there were none in the last two attempts. "
+                                       f"Consequently, there was a {error_saving:.2f} reduction in inaccuracies due to practice, indicating an enhancement in the quality of learning. "
+                                       f"There was progress in both the quantity and quality of learning.")
+                st.write("### Analysis")
+                st.write(analysis_statement)
+
             else:
                 st.error(f"No data found for UID: {uid_filter} and EID: {eid_filter}")
         else:
@@ -108,7 +144,7 @@ def filter_and_display_data(df):
 
 # Main function to run the app
 def main():
-    st.title("Your Human Maze Master Result")
+    st.title("Hey there, here is your Human maze master test result")
 
     # Connect to Google Sheets and load data
     df = connect_to_google_sheet()
@@ -116,6 +152,8 @@ def main():
     # Only show the data frame on successful connection
     if df is not None:
         st.sidebar.success("Connected to PsiQ Database")
+
+        # Call the filter and display data function to show sidebar inputs
         filter_and_display_data(df)
 
 if __name__ == "__main__":
