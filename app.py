@@ -129,8 +129,8 @@ def filter_and_display_data(df):
                 st.markdown(f"<div style='text-align: center;'>{summary_df.to_html(escape=False, index=False)}</div>", unsafe_allow_html=True)
 
                 # Add the analysis statement
-                analysis_statement = (f"The average time for the first two attempts was {first_two_trials_mean_time:.2f}, while for the last two attempts, it reduced significantly to only {last_two_trials_mean_time:.2f}. "
-                                       f"This practice-induced improvement resulted in a time saving of {time_saving:.2f}. This suggests that the quantity of the participant's learning increased due to practice. "
+                analysis_statement = (f"The average time for the first two attempts was {first_two_trials_mean_time:.2f} Seconds, while for the last two attempts, it reduced significantly to only {last_two_trials_mean_time:.2f} Seconds. "
+                                       f"This practice-induced improvement resulted in a time saving of {time_saving:.2f} Seconds. This suggests that the quantity of the participant's learning increased due to practice. "
                                        f"Regarding inaccuracies, there were an average of {first_two_trials_mean_error:.2f} inaccuracies in the first two attempts, while there were none in the last two attempts. "
                                        f"Consequently, there was a {error_saving:.2f} reduction in inaccuracies due to practice, indicating an enhancement in the quality of learning. "
                                        f"There was progress in both the quantity and quality of learning.")
