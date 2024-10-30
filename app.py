@@ -144,8 +144,11 @@ def filter_and_display_data(df):
                                       f"There was progress in both the quantity and quality of learning.")
                 
                 # Section: Benefits of Maze Learning
-                benefits_statement = ("Maze learning is beneficial for enhancing cognitive skills such as spatial memory, problem-solving, and strategic thinking. Through repeated attempts, individuals develop improved navigation strategies and reduced error rates, as observed in this analysis. "
-                                      "Practicing maze-solving helps in adapting to complex environments, fosters better memory recall of spatial cues, and promotes efficient decision-making. This process is instrumental in cognitive neuroscience research and has practical applications in education, therapy, and AI, as it mirrors the brain's learning and memory mechanisms.")
+                benefits_statement = (f"Maze learning is beneficial for enhancing cognitive skills such as spatial memory, problem-solving, and strategic thinking. Through repeated attempts, individuals develop improved navigation strategies and reduced error rates, as observed in this analysis. "
+                                      f"Practicing maze-solving helps in adapting to complex environments," 
+                                      f"fosters better memory recall of spatial cues, and promotes efficient decision-making." 
+                                      f"This process is instrumental in cognitive neuroscience research and has practical applications in education," 
+                                      f"therapy, and AI, as it mirrors the brain's learning and memory mechanisms.")
     
                 st.write("### Analysis")
                 st.write(analysis_statement)
