@@ -136,13 +136,21 @@ def filter_and_display_data(df):
                 st.markdown(f"<div style='text-align: center;'>{summary_df.to_html(escape=False, index=False)}</div>", unsafe_allow_html=True)
 
                 # Add the analysis statement
+                # Analysis of learning improvement over attempts
                 analysis_statement = (f"The average time for the first two attempts was {first_two_trials_mean_time:.2f} seconds, while for the last two attempts, it reduced significantly to only {last_two_trials_mean_time:.2f} seconds. "
-                                       f"This practice-induced improvement resulted in a time saving of {time_saving:.2f} seconds. This suggests that the quantity of the participant's learning increased due to practice. "
-                                       f"Regarding inaccuracies, there were an average of {first_two_trials_mean_error:.2f} inaccuracies in the first two attempts, while there were none in the last two attempts. "
-                                       f"Consequently, there was a {error_saving:.2f} reduction in inaccuracies due to practice, indicating an enhancement in the quality of learning. "
-                                       f"There was progress in both the quantity and quality of learning.")
+                                      f"This practice-induced improvement resulted in a time saving of {time_saving:.2f} seconds. This suggests that the quantity of the participant's learning increased due to practice. "
+                                      f"Regarding inaccuracies, there were an average of {first_two_trials_mean_error:.2f} inaccuracies in the first two attempts, while there were none in the last two attempts. "
+                                      f"Consequently, there was a {error_saving:.2f} reduction in inaccuracies due to practice, indicating an enhancement in the quality of learning. "
+                                      f"There was progress in both the quantity and quality of learning.")
+                
+                # Section: Benefits of Maze Learning
+                benefits_statement = ("Maze learning is beneficial for enhancing cognitive skills such as spatial memory, problem-solving, and strategic thinking. Through repeated attempts, individuals develop improved navigation strategies and reduced error rates, as observed in this analysis. "
+                                      "Practicing maze-solving helps in adapting to complex environments, fosters better memory recall of spatial cues, and promotes efficient decision-making. This process is instrumental in cognitive neuroscience research and has practical applications in education, therapy, and AI, as it mirrors the brain's learning and memory mechanisms.")
+    
                 st.write("### Analysis")
                 st.write(analysis_statement)
+                st.write("### Befinifits of Maze Task")
+                st.write(benefits_statement)
 
             else:
                 st.error(f"No data found for UID: {uid_filter} and EID: {eid_filter}")
