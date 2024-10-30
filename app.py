@@ -154,6 +154,7 @@ def filter_and_display_data(df):
                 st.write(analysis_statement)
                 st.write("### Befinifits of Maze Task")
                 st.write(benefits_statement)
+                st.write("This device is developed by Roshan Kumar using PsiQ Tech")
 
             else:
                 st.error(f"No data found for UID: {uid_filter} and EID: {eid_filter}")
